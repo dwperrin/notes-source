@@ -9,7 +9,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "lint": "eslint src",
+    "build": "react-scripts build",
+    "data": "./scripts/get-data.sh",
+    "test": "react-scripts test"
   },
   "eslintConfig": {
     "extends": "react-app"

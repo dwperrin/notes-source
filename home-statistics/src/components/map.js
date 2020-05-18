@@ -4,9 +4,9 @@ import React, { useState, useRef, useContext } from 'react';
 import MapGL, { Source, Layer, Popup } from 'react-map-gl';
 import Geocoder from 'react-map-gl-geocoder'
 import { DataContext } from '.'
-import { severities } from '../data-services'
+import { severities, bagKeys } from '../data-services'
 
-const token = "";
+const token = "pk.eyJ1IjoibWF4LW1hcGJveCIsImEiOiJjazh2M2Nxa2wwN2lqM21sZHR6OGltODZlIn0.WZQrkr5xUuF2pYodrApo-g";
 
 const getCodeFilter = (item) => {
     if (!item.context) {
@@ -47,7 +47,12 @@ export const Map = () => {
         show: false,
         latitude: undefined,
         longitude: undefined,
-        suburb: undefined
+        suburb: undefined,
+        total: undefined,
+        tested: undefined,
+        active: undefined,
+        recovered: undefined,
+        dead: undefined
     });
 
     const mapRef = useRef(null);
@@ -61,8 +66,9 @@ export const Map = () => {
         })
     }
 
-    const handleHover = (e) => {
-        if(e.features.length <=0 || !e.features[0].properties.POA_NAME16) {
+    const handleClick = (e) => {
+        if(!e || !e.features ||
+            e.features.length <=0 || !e.features[0].properties.POA_NAME16) {
             setPopup({...popup, show: false});
             return;
         }
@@ -70,12 +76,25 @@ export const Map = () => {
         const suburbs = e.features[0].properties.suburbName.split(',');
         const suburb = suburbs.slice(0, Math.min(3, suburbs.length)).join(', ');
 
+        const properties =  e.features[0].properties;
+        const propertyKeys = bagKeys(selectedDate);
+        const total = properties[propertyKeys.totalKey];
+        const tested = properties[propertyKeys.testsKey];
+        const active = properties[propertyKeys.activeKey];
+        const recovered = properties[propertyKeys.recoveredKey];
+        const dead = properties[propertyKeys.deadKey];
+
         setPopup({
             ...popup,
             show: true,
             latitude: e.lngLat[1],
             longitude: e.lngLat[0],
-            suburb
+            suburb,
+            total,
+            tested,
+            active,
+            recovered,
+            dead
         });
     }
 
@@ -88,7 +107,7 @@ export const Map = () => {
             mapStyle="mapbox://styles/mapbox/streets-v10"
             onViewportChange={nextViewport => setViewport(nextViewport)}
             mapboxApiAccessToken={token}
-            onHover={handleHover}
+            onClick={handleClick}
         >
             <Geocoder
                 mapRef={mapRef}
@@ -131,7 +150,19 @@ export const Map = () => {
                 closeButton={false}
                 closeOnClick={false}
                 >
-                <div>{popup.suburb}</div>
+                <div>
+                    <strong>{popup.suburb}</strong>
+                    <br/>
+                    <span>Total: {popup.total}</span>
+                    <br />
+                    <span>Active: {popup.active}</span>
+                    <br />
+                    <span>Recovered: {popup.recovered}</span>
+                    <br />
+                    <span>Tested: {popup.tested}</span>
+                    <br />
+                    <span>Dead: {popup.dead}</span>
+                </div>
             </Popup>}
         </MapGL>
     );
