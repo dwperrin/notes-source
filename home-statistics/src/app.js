@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, DataProvider } from './components';
+import { Map, DataProvider } from 'components';
 
 const App =() => (
     <DataProvider>

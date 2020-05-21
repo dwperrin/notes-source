@@ -1,0 +1,7 @@
+.geocoder {
+    float: right;
+}
+
+.mapboxgl-ctrl-geocoder {
+    width: inherit;
+}

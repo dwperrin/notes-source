@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { mergeData } from '../data-services'
+import { mergeData } from 'data-services'
 
 export const DataContext = createContext({});
 
