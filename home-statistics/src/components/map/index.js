@@ -89,6 +89,8 @@ export const Map = () => {
             return;
         }
 
+        console.log(selectedDate)
+
         const suburbs = e.features[0].properties.suburbName.split(',');
         const suburb = suburbs.slice(0, Math.min(3, suburbs.length)).join(', ');
         const population =  e.features[0].properties.population;
