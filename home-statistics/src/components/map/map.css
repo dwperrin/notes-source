@@ -1,7 +1,16 @@
-.geocoder {
+
+.map .geocoder {
     float: right;
 }
 
-.mapboxgl-ctrl-geocoder {
+.map .mapboxgl-ctrl-geocoder {
     width: inherit;
+}
+
+.map .map-type-selector {
+    padding: 20px;
+}
+
+.map .map-type-selector .item {
+    padding: 20px;
 }

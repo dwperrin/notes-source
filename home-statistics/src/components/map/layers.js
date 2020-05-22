@@ -104,3 +104,21 @@ export const source = (data, selectedDate) => (
         />
     </Source>
 )
+
+export const swap = (map, mapStyle, mapType) => {
+    if(mapStyle === mapType.cases) {
+        map.setLayoutProperty(layers.testsId, 'visibility', 'none');
+        map.setLayoutProperty(layers.casesId, 'visibility', 'visible');
+        map.setLayoutProperty(layers.activeId, 'visibility', 'none');
+
+    } else if(mapStyle === mapType.tests) {
+        map.setLayoutProperty(layers.testsId, 'visibility', 'visible');
+        map.setLayoutProperty(layers.casesId, 'visibility', 'none');
+        map.setLayoutProperty(layers.activeId, 'visibility', 'none');
+
+    } else if(mapStyle === mapType.active) {
+        map.setLayoutProperty(layers.testsId, 'visibility', 'none');
+        map.setLayoutProperty(layers.casesId, 'visibility', 'none');
+        map.setLayoutProperty(layers.activeId, 'visibility', 'visible');
+    }
+}

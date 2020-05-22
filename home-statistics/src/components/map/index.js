@@ -6,7 +6,7 @@ import MapGL, { Popup } from 'react-map-gl';
 import Geocoder from 'react-map-gl-geocoder';
 import { DataContext } from 'components/data-context';
 import { bagKeys } from 'data-services';
-import { source, layers } from './layers';
+import { source, layers, swap } from './layers';
 import { getCodeFilter } from './geo-coder';
 
 const token = "pk.eyJ1IjoibWF4LW1hcGJveCIsImEiOiJjazh2M2Nxa2wwN2lqM21sZHR6OGltODZlIn0.WZQrkr5xUuF2pYodrApo-g";
@@ -14,16 +14,7 @@ const token = "pk.eyJ1IjoibWF4LW1hcGJveCIsImEiOiJjazh2M2Nxa2wwN2lqM21sZHR6OGltOD
 const mapType = Object.freeze({
     cases: layers.casesId,
     tests: layers.testsId,
-    active: layers.activeId,
-    next: (value) => {
-        const map = {
-            [mapType.cases]: mapType.tests,
-            [mapType.tests]: mapType.active,
-            [mapType.active]: mapType.cases
-        }
-
-        return map[value];
-    }
+    active: layers.activeId
 });
 
 export const Map = () => {
@@ -55,22 +46,8 @@ export const Map = () => {
 
     useEffect(() => {
         const map = mapRef.current.getMap();
+        swap(map, mapStyle, mapType);
 
-        if(mapStyle === mapType.cases) {
-            map.setLayoutProperty(layers.testsId, 'visibility', 'none');
-            map.setLayoutProperty(layers.casesId, 'visibility', 'visible');
-            map.setLayoutProperty(layers.activeId, 'visibility', 'none');
-
-        } else if(mapStyle === mapType.tests) {
-            map.setLayoutProperty(layers.testsId, 'visibility', 'visible');
-            map.setLayoutProperty(layers.casesId, 'visibility', 'none');
-            map.setLayoutProperty(layers.activeId, 'visibility', 'none');
-
-        } else if(mapStyle === mapType.active) {
-            map.setLayoutProperty(layers.testsId, 'visibility', 'none');
-            map.setLayoutProperty(layers.casesId, 'visibility', 'none');
-            map.setLayoutProperty(layers.activeId, 'visibility', 'visible');
-        }
     }, [mapStyle]);
 
     const handleGeocoderViewportChange = (viewport) => {
@@ -88,8 +65,6 @@ export const Map = () => {
             setPopup({...popup, show: false});
             return;
         }
-
-        console.log(selectedDate)
 
         const suburbs = e.features[0].properties.suburbName.split(',');
         const suburb = suburbs.slice(0, Math.min(3, suburbs.length)).join(', ');
@@ -119,56 +94,75 @@ export const Map = () => {
     }
 
     return (
-        <div>
+        <div className="map">
             <div ref={geoCoderRef} className="geocoder"></div>
             <MapGL
-            ref={mapRef}
-            {...viewport}
-            width="100vw"
-            height="500px"
-            mapStyle="mapbox://styles/mapbox/streets-v10"
-            onViewportChange={nextViewport => setViewport(nextViewport)}
-            onLoad={() => { setMapStye(mapType.cases); }}
-            mapboxApiAccessToken={token}
-            onClick={handleClick}
-        >
-            <Geocoder
-                mapRef={mapRef}
-                containerRef={geoCoderRef}
-                countries="au"
-                bbox={[139.965, -38.030, 155.258, -27.839]}
-                limit={200}
-                onViewportChange={handleGeocoderViewportChange}
+                ref={mapRef}
+                {...viewport}
+                width="100vw"
+                height="500px"
+                mapStyle="mapbox://styles/mapbox/streets-v10"
+                onViewportChange={nextViewport => setViewport(nextViewport)}
+                onLoad={() => { setMapStye(mapType.cases); }}
                 mapboxApiAccessToken={token}
-                filter={getCodeFilter}
-            />
-            {postCodes && source(postCodes, selectedDate)}
-            {popup.show && <Popup
-                latitude={popup.latitude}
-                longitude={popup.longitude}
-                closeButton={false}
-                closeOnClick={false}
-                >
-                <div>
-                    <strong>{popup.suburb}</strong>
-                    <br/>
-                    <span>Total: {popup.total}</span>
-                    <br />
-                    <span>Active: {popup.active}</span>
-                    <br />
-                    <span>Recovered: {popup.recovered}</span>
-                    <br />
-                    <span>Tested: {popup.tested}</span>
-                    <br />
-                    <span>Dead: {popup.dead}</span>
-                    <br />
-                    <span>Population: {popup.population}</span>
-                </div>
-            </Popup>}
-        </MapGL>
-        <button onClick={() => {
-            setMapStye(mapType.next(mapStyle));
-        }}>Hide</button>
+                onClick={handleClick}>
+                <Geocoder
+                    mapRef={mapRef}
+                    containerRef={geoCoderRef}
+                    countries="au"
+                    bbox={[139.965, -38.030, 155.258, -27.839]}
+                    limit={200}
+                    onViewportChange={handleGeocoderViewportChange}
+                    mapboxApiAccessToken={token}
+                    filter={getCodeFilter}
+                />
+                {postCodes && source(postCodes, selectedDate)}
+                {popup.show && <Popup
+                    latitude={popup.latitude}
+                    longitude={popup.longitude}
+                    closeButton={false}
+                    closeOnClick={false}
+                    >
+                    <div>
+                        <strong>{popup.suburb}</strong>
+                        <br/>
+                        <span>Total: {popup.total}</span>
+                        <br />
+                        <span>Active: {popup.active}</span>
+                        <br />
+                        <span>Recovered: {popup.recovered}</span>
+                        <br />
+                        <span>Tested: {popup.tested}</span>
+                        <br />
+                        <span>Dead: {popup.dead}</span>
+                        <br />
+                        <span>Population: {popup.population}</span>
+                    </div>
+                </Popup>}
+            </MapGL>
+            <div className="map-type-selector">
+                <label className="item">
+                    Cases #:
+                </label>
+                <label className="item">
+                    <input type="radio" name="test" value={mapType.cases}
+                        checked={mapStyle === mapType.cases}
+                        onChange={() => { setMapStye(mapType.cases); }} />
+                    Total
+                </label>
+                <label className="item">
+                    <input type="radio" name="test" value={mapType.active}
+                    checked={mapStyle === mapType.active}
+                    onChange={() => { setMapStye(mapType.active); }} />
+                    Active
+                 </label>
+                 <label className="item">
+                    <input type="radio" name="test" value={mapType.tests}
+                    checked={mapStyle === mapType.tests}
+                    onChange={() => { setMapStye(mapType.tests); }} />
+                    Tests
+                 </label>
+            </div>
         </div>
     );
 }
