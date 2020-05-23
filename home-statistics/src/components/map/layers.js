@@ -1,5 +1,6 @@
 import React from 'react';
 import { Source, Layer } from 'react-map-gl';
+import { bagKeys } from 'data-services/levels'
 
 import { caseLevels, testLevels, activeLevels } from 'data-services'
 
@@ -41,17 +42,6 @@ const getRecoveredColorSchema = () => ([
     activeLevels[4].key, '#0a6624',
 ]);
 
-/*
-
-testLevels[0].key, '#f0eceb',
-    testLevels[1].key, '#d4d0cf',
-    testLevels[2].key, '#bab7b6',
-    testLevels[3].key, '#a6a2a1',
-    testLevels[4].key, '#787574',
-    testLevels[5].key, '#636160'
-
-*/
-
 export const layers = {
     casesId: 'PostcodeCases',
     testsId: 'PostcodeTests',
@@ -59,75 +49,80 @@ export const layers = {
     recoveredId: 'PostcodeRecovered'
 }
 
-export const source = (data, selectedDate) => (
-    <Source type="geojson" data={data}>
-        <Layer
-            id="Postcode"
-            source="Postcode"
-            type="line"
-            paint={{
-                "line-color": "#bdb8b7",
-                "line-width": 1
-            }}
-        />
-        <Layer
-            id={layers.testsId}
-            source="Postcode"
-            type="fill"
-            paint={{
-                'fill-color': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', `${selectedDate}-testRange`],
-                    ...getTestColorSchema()
-                ],
-                'fill-opacity': 0.8
-            }}
-        />
-        <Layer
-            id={layers.activeId}
-            source="Postcode"
-            type="fill"
-            paint={{
-                'fill-color': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', `${selectedDate}-activeRange`],
-                    ...getActiveColorSchema()
-                ],
-                'fill-opacity': 0.8
-            }}
-        />
-        <Layer
-            id={layers.recoveredId}
-            source="Postcode"
-            type="fill"
-            paint={{
-                'fill-color': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', `${selectedDate}-recoveredRange`],
-                    ...getRecoveredColorSchema()
-                ],
-                'fill-opacity': 0.8
-            }}
-        />
-        <Layer
-            id={layers.casesId}
-            source="Postcode"
-            type="fill"
-            paint={{
-                'fill-color': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', selectedDate],
-                    ...getCaseColorSchema()
-                ],
-                'fill-opacity': 0.8
-            }}
-        />
-    </Source>
-)
+export const source = (data, selectedDate) => {
+
+    const { rangeTestsKey, rangeActiveKey, rangeRecoveredKey } = bagKeys(selectedDate);
+
+    return (
+        <Source type="geojson" data={data}>
+            <Layer
+                id="Postcode"
+                source="Postcode"
+                type="line"
+                paint={{
+                    "line-color": "#bdb8b7",
+                    "line-width": 1
+                }}
+            />
+            <Layer
+                id={layers.testsId}
+                source="Postcode"
+                type="fill"
+                paint={{
+                    'fill-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', rangeTestsKey],
+                        ...getTestColorSchema()
+                    ],
+                    'fill-opacity': 0.8
+                }}
+            />
+            <Layer
+                id={layers.activeId}
+                source="Postcode"
+                type="fill"
+                paint={{
+                    'fill-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', rangeActiveKey],
+                        ...getActiveColorSchema()
+                    ],
+                    'fill-opacity': 0.8
+                }}
+            />
+            <Layer
+                id={layers.recoveredId}
+                source="Postcode"
+                type="fill"
+                paint={{
+                    'fill-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', rangeRecoveredKey],
+                        ...getRecoveredColorSchema()
+                    ],
+                    'fill-opacity': 0.8
+                }}
+            />
+            <Layer
+                id={layers.casesId}
+                source="Postcode"
+                type="fill"
+                paint={{
+                    'fill-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', selectedDate],
+                        ...getCaseColorSchema()
+                    ],
+                    'fill-opacity': 0.8
+                }}
+            />
+        </Source>
+    )
+}
 
 export const swap = (map, mapStyle, mapType) => {
     if(mapStyle === mapType.cases) {
