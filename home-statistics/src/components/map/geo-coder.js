@@ -1,4 +1,7 @@
-export const getCodeFilter = (item) => {
+import React from 'react';
+import Geocoder from 'react-map-gl-geocoder';
+
+const getCodeFilter = (item) => {
     if (!item.context) {
         return item;
     }
@@ -13,3 +16,17 @@ export const getCodeFilter = (item) => {
         });
     }
 }
+
+export const GeoCoder = ({ mapRef, containerRef, token, onViewportChange }) => (
+    <Geocoder
+        mapRef={mapRef}
+        containerRef={containerRef}
+        countries="au"
+        bbox={[139.965, -38.030, 155.258, -27.839]}
+        limit={200}
+        onViewportChange={onViewportChange}
+        mapboxApiAccessToken={token}
+        filter={getCodeFilter}
+    />
+)
+

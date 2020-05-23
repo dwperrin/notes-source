@@ -1,4 +1,9 @@
-import { caseLevels, testLevels, activeLevels, bagKeys } from './levels';
+import {
+    caseLevels,
+    testLevels,
+    activeLevels,
+    recoveredLevels,
+    bagKeys } from './levels';
 
 const formatMap = (data) =>
     data.data.reduce((acc, curr) => {
@@ -49,9 +54,10 @@ export const mergeData = ({
         return { };
     }
 
-    const getCaseLevelKey = getLevelKey(caseLevels);
-    const getTestLevelKey = getLevelKey(testLevels);
+    const caseLevelKey = getLevelKey(caseLevels);
+    const testLevelKey = getLevelKey(testLevels);
     const activeLevelsKey = getLevelKey(activeLevels);
+    const recoveredLevelsKey = getLevelKey(recoveredLevels);
 
     const cases = formatMap(casesInitial);
     const tests = formatMap(testsInitial);
@@ -66,7 +72,7 @@ export const mergeData = ({
             const testsEntry = tests.get(date);
 
             const { testsKey, activeKey, totalKey, recoveredKey, deadKey,
-                rangeTestsKey, rangeActiveKey } = bagKeys(date);
+                rangeTestsKey, rangeActiveKey, rangeRecoveredKey } = bagKeys(date);
 
             feature.properties[date] = 0;
 
@@ -79,6 +85,7 @@ export const mergeData = ({
             // ranges
             feature.properties[rangeTestsKey] = 0;
             feature.properties[rangeActiveKey] = 0;
+            feature.properties[rangeRecoveredKey] = 0;
 
             if(caseEntry.has(feature.properties.POA_NAME16)) {
                 const caseEntryValue = caseEntry.get(feature.properties.POA_NAME16);
@@ -87,8 +94,9 @@ export const mergeData = ({
                 const dead = parseInt(caseEntryValue.Deaths);
                 const active = total - (recovered + dead);
 
-                feature.properties[date] = getCaseLevelKey(total);
+                feature.properties[date] = caseLevelKey(total);
                 feature.properties[rangeActiveKey] = activeLevelsKey(active);
+                feature.properties[rangeRecoveredKey] = recoveredLevelsKey(recovered);
 
                 feature.properties[totalKey] = total;
                 feature.properties[activeKey] = active;
@@ -99,7 +107,7 @@ export const mergeData = ({
             if(testsEntry.has(feature.properties.POA_NAME16)) {
                 const testEntryValue = testsEntry.get(feature.properties.POA_NAME16);
                 const total = parseInt(testEntryValue.Number);
-                const testRange = getTestLevelKey(total);
+                const testRange = testLevelKey(total);
 
                 feature.properties[testsKey] = total;
                 feature.properties[rangeTestsKey] = testRange;

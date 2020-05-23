@@ -2,47 +2,34 @@ import 'react-map-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import './map.css';
 
 import React, { useState, useRef, useContext, useEffect } from 'react';
-import MapGL, { Popup } from 'react-map-gl';
-import Geocoder from 'react-map-gl-geocoder';
+import MapGL from 'react-map-gl';
 import { DataContext } from 'components/data-context';
 import { bagKeys } from 'data-services';
 import { source, layers, swap } from './layers';
-import { getCodeFilter } from './geo-coder';
+import { GeoCoder } from './geo-coder';
+import { usePopup, Popup } from './popup';
+import { Selector } from './selector';
 
 const token = "pk.eyJ1IjoibWF4LW1hcGJveCIsImEiOiJjazh2M2Nxa2wwN2lqM21sZHR6OGltODZlIn0.WZQrkr5xUuF2pYodrApo-g";
 
 const mapType = Object.freeze({
     cases: layers.casesId,
     tests: layers.testsId,
-    active: layers.activeId
+    active: layers.activeId,
+    recovered: layers.recoveredId
 });
 
 export const Map = () => {
     const { postCodes, selectedDate } = useContext(DataContext);
-
     const [viewport, setViewport] = useState({
         zoom: 5,
         latitude: -32.8688,
         longitude: 150.0093
     });
-
-    const [mapStyle, setMapStye] = useState('');
-
-    const [popup, setPopup] = useState({
-        show: false,
-        latitude: undefined,
-        longitude: undefined,
-        suburb: undefined,
-        total: undefined,
-        tested: undefined,
-        active: undefined,
-        recovered: undefined,
-        dead: undefined,
-        population: undefined
-    });
-
+    const [mapStyle, setMapStyle] = useState('');
     const mapRef = useRef(null);
     const geoCoderRef = useRef(null);
+    const [popup, setPopup] = usePopup(() => bagKeys(selectedDate))
 
     useEffect(() => {
         const map = mapRef.current.getMap();
@@ -60,37 +47,7 @@ export const Map = () => {
     }
 
     const handleClick = (e) => {
-        if(!e || !e.features ||
-            e.features.length <=0 || !e.features[0].properties.POA_NAME16) {
-            setPopup({...popup, show: false});
-            return;
-        }
-
-        const suburbs = e.features[0].properties.suburbName.split(',');
-        const suburb = suburbs.slice(0, Math.min(3, suburbs.length)).join(', ');
-        const population =  e.features[0].properties.population;
-
-        const properties =  e.features[0].properties;
-        const propertyKeys = bagKeys(selectedDate);
-        const total = properties[propertyKeys.totalKey];
-        const tested = properties[propertyKeys.testsKey];
-        const active = properties[propertyKeys.activeKey];
-        const recovered = properties[propertyKeys.recoveredKey];
-        const dead = properties[propertyKeys.deadKey];
-
-        setPopup({
-            ...popup,
-            show: true,
-            latitude: e.lngLat[1],
-            longitude: e.lngLat[0],
-            suburb,
-            total,
-            tested,
-            active,
-            recovered,
-            dead,
-            population
-        });
+        setPopup(e.features || null, e.lngLat);
     }
 
     return (
@@ -103,66 +60,19 @@ export const Map = () => {
                 height="500px"
                 mapStyle="mapbox://styles/mapbox/streets-v10"
                 onViewportChange={nextViewport => setViewport(nextViewport)}
-                onLoad={() => { setMapStye(mapType.cases); }}
+                onLoad={() => { setMapStyle(mapType.cases); }}
                 mapboxApiAccessToken={token}
                 onClick={handleClick}>
-                <Geocoder
+                <GeoCoder
                     mapRef={mapRef}
                     containerRef={geoCoderRef}
-                    countries="au"
-                    bbox={[139.965, -38.030, 155.258, -27.839]}
-                    limit={200}
                     onViewportChange={handleGeocoderViewportChange}
-                    mapboxApiAccessToken={token}
-                    filter={getCodeFilter}
+                    token={token}
                 />
                 {postCodes && source(postCodes, selectedDate)}
-                {popup.show && <Popup
-                    latitude={popup.latitude}
-                    longitude={popup.longitude}
-                    closeButton={false}
-                    closeOnClick={false}
-                    >
-                    <div>
-                        <strong>{popup.suburb}</strong>
-                        <br/>
-                        <span>Total: {popup.total}</span>
-                        <br />
-                        <span>Active: {popup.active}</span>
-                        <br />
-                        <span>Recovered: {popup.recovered}</span>
-                        <br />
-                        <span>Tested: {popup.tested}</span>
-                        <br />
-                        <span>Dead: {popup.dead}</span>
-                        <br />
-                        <span>Population: {popup.population}</span>
-                    </div>
-                </Popup>}
+                {popup.show && <Popup {...popup} />}
             </MapGL>
-            <div className="map-type-selector">
-                <label className="item">
-                    Cases #:
-                </label>
-                <label className="item">
-                    <input type="radio" name="test" value={mapType.cases}
-                        checked={mapStyle === mapType.cases}
-                        onChange={() => { setMapStye(mapType.cases); }} />
-                    Total
-                </label>
-                <label className="item">
-                    <input type="radio" name="test" value={mapType.active}
-                    checked={mapStyle === mapType.active}
-                    onChange={() => { setMapStye(mapType.active); }} />
-                    Active
-                 </label>
-                 <label className="item">
-                    <input type="radio" name="test" value={mapType.tests}
-                    checked={mapStyle === mapType.tests}
-                    onChange={() => { setMapStye(mapType.tests); }} />
-                    Tests
-                 </label>
-            </div>
+            <Selector {...{ mapStyle, mapType, setMapStyle }} />
         </div>
     );
 }

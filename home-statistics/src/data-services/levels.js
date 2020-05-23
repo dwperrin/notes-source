@@ -70,6 +70,26 @@ export const activeLevels = [{
     key: 51
 }];
 
+export const recoveredLevels = [{
+    start: 0,
+    end: 2,
+    key: 2
+},{
+    start: 3,
+    end: 7,
+    key: 7
+},{
+    start: 8,
+    end: 20,
+    key: 20
+},{
+    start: 21,
+    end: 50,
+    key: 50
+},{
+    start: 51,
+    key: 51
+}];
 
 export const bagKeys = (date) => ({
     testsKey: `${date}-tests`,
@@ -77,6 +97,7 @@ export const bagKeys = (date) => ({
     totalKey: `${date}-total`,
     rangeTestsKey: `${date}-testRange`,
     rangeActiveKey: `${date}-activeRange`,
+    rangeRecoveredKey: `${date}-recoveredRange`,
     recoveredKey: `${date}-recovered`,
     deadKey: `${date}-dead`
 });

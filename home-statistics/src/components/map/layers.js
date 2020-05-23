@@ -32,6 +32,15 @@ const getActiveColorSchema = () => ([
     activeLevels[4].key, '#b30000',
 ]);
 
+const getRecoveredColorSchema = () => ([
+    0,'transparent',
+    activeLevels[0].key, '#a8edbb',
+    activeLevels[1].key, '#73de91',
+    activeLevels[2].key, '#3aba5e',
+    activeLevels[3].key, '#178f39',
+    activeLevels[4].key, '#0a6624',
+]);
+
 /*
 
 testLevels[0].key, '#f0eceb',
@@ -46,7 +55,8 @@ testLevels[0].key, '#f0eceb',
 export const layers = {
     casesId: 'PostcodeCases',
     testsId: 'PostcodeTests',
-    activeId: 'PostcodeActive'
+    activeId: 'PostcodeActive',
+    recoveredId: 'PostcodeRecovered'
 }
 
 export const source = (data, selectedDate) => (
@@ -89,6 +99,20 @@ export const source = (data, selectedDate) => (
             }}
         />
         <Layer
+            id={layers.recoveredId}
+            source="Postcode"
+            type="fill"
+            paint={{
+                'fill-color': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', `${selectedDate}-recoveredRange`],
+                    ...getRecoveredColorSchema()
+                ],
+                'fill-opacity': 0.8
+            }}
+        />
+        <Layer
             id={layers.casesId}
             source="Postcode"
             type="fill"
@@ -110,15 +134,24 @@ export const swap = (map, mapStyle, mapType) => {
         map.setLayoutProperty(layers.testsId, 'visibility', 'none');
         map.setLayoutProperty(layers.casesId, 'visibility', 'visible');
         map.setLayoutProperty(layers.activeId, 'visibility', 'none');
+        map.setLayoutProperty(layers.recoveredId, 'visibility', 'none');
 
     } else if(mapStyle === mapType.tests) {
         map.setLayoutProperty(layers.testsId, 'visibility', 'visible');
         map.setLayoutProperty(layers.casesId, 'visibility', 'none');
         map.setLayoutProperty(layers.activeId, 'visibility', 'none');
+        map.setLayoutProperty(layers.recoveredId, 'visibility', 'none');
 
     } else if(mapStyle === mapType.active) {
         map.setLayoutProperty(layers.testsId, 'visibility', 'none');
         map.setLayoutProperty(layers.casesId, 'visibility', 'none');
         map.setLayoutProperty(layers.activeId, 'visibility', 'visible');
+        map.setLayoutProperty(layers.recoveredId, 'visibility', 'none');
+
+    } else if(mapStyle === mapType.recovered) {
+        map.setLayoutProperty(layers.testsId, 'visibility', 'none');
+        map.setLayoutProperty(layers.casesId, 'visibility', 'none');
+        map.setLayoutProperty(layers.activeId, 'visibility', 'none');
+        map.setLayoutProperty(layers.recoveredId, 'visibility', 'visible');
     }
 }
