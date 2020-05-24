@@ -8,9 +8,14 @@
 }
 
 .map .map-type-selector {
-    padding: 20px;
+    padding: 40px;
+    font-size: 25px;
 }
 
 .map .map-type-selector .item {
     padding: 20px;
+}
+
+.map-type-selector .item.selected {
+    border-bottom: 3px solid black;
 }

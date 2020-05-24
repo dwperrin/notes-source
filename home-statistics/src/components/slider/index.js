@@ -17,7 +17,7 @@ export const DateSlider = () => {
     return (
         <div className="slider">
             <Slider
-            value={initialValue - 1}
+            value={initialValue -1}
             min={0}
             max={initialValue}
             onChange={(value) => { setDate(dates[value]); } }

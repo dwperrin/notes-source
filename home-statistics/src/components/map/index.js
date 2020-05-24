@@ -22,9 +22,9 @@ const mapType = Object.freeze({
 export const Map = () => {
     const { postCodes, selectedDate } = useContext(DataContext);
     const [viewport, setViewport] = useState({
-        zoom: 5,
+        zoom: 6,
         latitude: -32.8688,
-        longitude: 150.0093
+        longitude: 148.0093
     });
     const [mapStyle, setMapStyle] = useState('');
     const mapRef = useRef(null);
@@ -57,7 +57,7 @@ export const Map = () => {
                 ref={mapRef}
                 {...viewport}
                 width="100vw"
-                height="500px"
+                height="700px"
                 mapStyle="mapbox://styles/mapbox/streets-v10"
                 onViewportChange={nextViewport => setViewport(nextViewport)}
                 onLoad={() => { setMapStyle(mapType.cases); }}
