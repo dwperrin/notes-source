@@ -121,5 +121,5 @@ export const mergeData = ({
         }
     });
 
-    return { postCodes, cases, population, tests, selectedDate };
+    return { postCodes, cases, population, tests, selectedDate, dates };
 }

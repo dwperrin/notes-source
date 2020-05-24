@@ -21,7 +21,18 @@ export const DataProvider = ({ children }) => {
         ])
         .then(([postCodes, cases, population, tests]) => {
             const data = mergeData({ postCodes, cases, population, tests });
-            setData(data);
+
+            const result = {
+                ...data,
+                setDate: (date) => {
+                    setData({
+                        ...result,
+                        selectedDate: date
+                    });
+                }
+            }
+
+            setData(result);
         });
     }, [])
 

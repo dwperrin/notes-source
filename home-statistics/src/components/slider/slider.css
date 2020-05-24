@@ -1,0 +1,17 @@
+.slider {
+    padding: 20px;
+}
+
+.slider .controller {
+    width: 90px;
+    height: 40px;
+    background: white;
+    display: block;
+    border-radius: 10px;
+}
+
+.slider .controller-label {
+    position: relative;
+    top: 10px;
+    left: 15px;
+}
