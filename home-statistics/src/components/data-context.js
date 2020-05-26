@@ -14,10 +14,10 @@ export const DataProvider = ({ children }) => {
     useEffect(() => {
 
         Promise.all([
-            fetch('/post-codes.json').then(response => response.json()),
-            fetch('/cases.json').then(response => response.json()),
-            fetch('/population.json').then(response => response.json()),
-            fetch('/tests.json').then(response => response.json())
+            fetch('/data/post-codes.json').then(response => response.json()),
+            fetch('/data/cases.json').then(response => response.json()),
+            fetch('/data/population.json').then(response => response.json()),
+            fetch('/data/tests.json').then(response => response.json())
         ])
         .then(([postCodes, cases, population, tests]) => {
             const data = mergeData({ postCodes, cases, population, tests });
