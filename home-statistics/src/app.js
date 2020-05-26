@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, DataProvider, DateSlider } from 'components';
+import { Map, DataProvider, DateSlider, Histogram } from 'components';
 
 const App =() => (
     <DataProvider>
@@ -9,6 +9,7 @@ const App =() => (
         <section>
             <Map />
             <DateSlider />
+            <Histogram />
         </section>
     </DataProvider>
 );

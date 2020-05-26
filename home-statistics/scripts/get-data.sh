@@ -10,4 +10,6 @@ curl https://nswdac-covid-19-postcode-heatmap.azurewebsites.net/datafiles/data_t
 
 curl https://nswdac-covid-19-postcode-heatmap.azurewebsites.net/datafiles/data_Cases2.json --output ./public/cases.json
 
+# curl https://nswdac-covid-19-postcode-heatmap.azurewebsites.net/datafiles/data_Cases2.json
+
 # curl https://nswdac-np-covid-19-postcode-heatmap.azurewebsites.net/datafiles/usecase2.json --output usecases.json

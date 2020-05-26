@@ -56,7 +56,7 @@ export const Map = () => {
             <MapGL
                 ref={mapRef}
                 {...viewport}
-                width="100vw"
+                width="99vw"
                 height="700px"
                 mapStyle="mapbox://styles/mapbox/streets-v10"
                 onViewportChange={nextViewport => setViewport(nextViewport)}
