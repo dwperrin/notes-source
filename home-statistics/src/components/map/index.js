@@ -52,11 +52,12 @@ export const Map = () => {
 
     return (
         <div className="map">
+            <Selector {...{ mapStyle, mapType, setMapStyle }} />
             <div ref={geoCoderRef} className="geocoder"></div>
             <MapGL
                 ref={mapRef}
                 {...viewport}
-                width="99vw"
+                width="100%"
                 height="700px"
                 mapStyle="mapbox://styles/mapbox/streets-v10"
                 onViewportChange={nextViewport => setViewport(nextViewport)}
@@ -72,7 +73,6 @@ export const Map = () => {
                 {postCodes && source(postCodes, selectedDate)}
                 {popup.show && <Popup {...popup} />}
             </MapGL>
-            <Selector {...{ mapStyle, mapType, setMapStyle }} />
         </div>
     );
 }

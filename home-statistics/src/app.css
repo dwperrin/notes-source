@@ -1,0 +1,12 @@
+header {
+    text-align: center;
+}
+
+*[role="tablist"] {
+    font-size: 28px;
+}
+
+section[role="main"] {
+    padding-left: 10px;
+    padding-right: 10px;
+}

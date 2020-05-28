@@ -2,10 +2,17 @@ import React, { createContext, useEffect, useState } from 'react';
 import { mergeData } from 'data-services'
 
 export const DataContext = createContext({});
-
 export const DataConsumer = DataContext.Consumer;
-
 const ContextProvider = DataContext.Provider;
+
+const importData = async () => {
+    const postCodes = await import('data/post-codes.json');
+    const cases = await import('data/cases.json');
+    const population = await import('data/population.json');
+    const tests = await import('data/tests.json');
+
+    return { postCodes, cases, population, tests };
+}
 
 export const DataProvider = ({ children }) => {
 
@@ -13,13 +20,17 @@ export const DataProvider = ({ children }) => {
 
     useEffect(() => {
 
-        Promise.all([
-            fetch('/data/post-codes.json').then(response => response.json()),
-            fetch('/data/cases.json').then(response => response.json()),
-            fetch('/data/population.json').then(response => response.json()),
-            fetch('/data/tests.json').then(response => response.json())
-        ])
-        .then(([postCodes, cases, population, tests]) => {
+        importData()
+        .then(({ postCodes, cases, population, tests }) => {
+            return {
+                postCodes: postCodes.default,
+                cases: cases.default,
+                population: population.default,
+                tests: tests.default
+            };
+        })
+        .then(({ postCodes, cases, population, tests }) => {
+
             const data = mergeData({ postCodes, cases, population, tests });
 
             const result = {
@@ -34,6 +45,7 @@ export const DataProvider = ({ children }) => {
 
             setData(result);
         });
+
     }, [])
 
     return (

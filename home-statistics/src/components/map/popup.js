@@ -17,8 +17,7 @@ export const usePopup = (getPropKeys) => {
     });
 
     const changePopup = (features, [longitude, latitude]) => {
-
-        if(features || features.length <= 0 || !features[0].properties.POA_NAME16) {
+        if(!features || features.length <= 0 || !features[0].properties.POA_NAME16) {
             setPopup({...popup, show: false});
             return;
         }
