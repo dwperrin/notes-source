@@ -26,6 +26,65 @@ const DisplayType = Object.freeze({
     nonGroup: 'non-group'
 });
 
+const renderGroup = (data) => (
+    <TotalsInternal
+        getBars={() =>
+            [
+                <Bar key="1" dataKey="cases" fill="#ff8080" />,
+                <Bar key="2" dataKey="active" fill="#e60000" />,
+                <Bar key="3" dataKey="recovered" fill="#0a6624" />,
+                <Bar key="4" dataKey="tests" fill="#6189ba" />,
+                <Bar key="5" dataKey="recentTests" fill="#6189ba" />
+            ]
+        }
+        data={data}
+        getTooltipLabel={tooltipLabel}
+        getTooltipValue={tooltipValue}
+        getLegendLabel={legend}
+    />
+);
+
+const renderIndividual = (data) => (
+    <>
+        <TotalsInternal
+            getBars={() => <Bar dataKey="cases" fill="#ff8080" />}
+            data={data}
+            getTooltipLabel={tooltipLabel}
+            getTooltipValue={tooltipValue}
+            getLegendLabel={legend}
+        />
+        <TotalsInternal
+            data={data}
+            getBars={() => <Bar dataKey="active" fill="#e60000" />}
+            getTooltipLabel={tooltipLabel}
+            getTooltipValue={tooltipValue}
+            getLegendLabel={legend}
+        />
+        <TotalsInternal
+            data={data}
+            getBars={() => <Bar dataKey="recovered" fill="#0a6624" />}
+            getTooltipLabel={tooltipLabel}
+            getTooltipValue={tooltipValue}
+            getLegendLabel={legend}
+        />
+        <TotalsInternal
+            data={data}
+            getBars={() => <Bar dataKey="tests" fill="#6189ba" />}
+            getTooltipLabel={tooltipLabel}
+            getTooltipValue={tooltipValue}
+            getLegendLabel={legend}
+        />
+        <TotalsInternal
+            dataKey="value"
+            data={data}
+            getBars={() => <Bar dataKey="recentTests" fill="#1a5cad" />}
+            getTooltipLabel={tooltipLabel}
+            getTooltipValue={tooltipValue}
+            getLegendLabel={legend}
+        />
+    </>
+)
+
 export const Totals = () => {
 
     const { cases, tests, selectedDate } = useContext(DataContext);
@@ -53,68 +112,9 @@ export const Totals = () => {
     , [cases, tests, selectedDate]);
 
     const render = () => {
-        if(displayType === DisplayType.group) {
-            return (
-                <TotalsInternal
-                    getBars={() =>
-                        [
-                            <Bar key="1" dataKey="cases" fill="#ff8080" />,
-                            <Bar key="2" dataKey="active" fill="#e60000" />,
-                            <Bar key="3" dataKey="recovered" fill="#0a6624" />,
-                            <Bar key="4" dataKey="tests" fill="#6189ba" />,
-                            <Bar key="5" dataKey="recentTests" fill="#6189ba" />
-                        ]
-                    }
-                    data={data}
-                    getTooltipLabel={tooltipLabel}
-                    getTooltipValue={tooltipValue}
-                    getLegendLabel={legend}
-                />
-            );
-        }
-
-        return (
-            <>
-                <TotalsInternal
-                    getBars={() => <Bar dataKey="cases" fill="#ff8080" />}
-                    data={data}
-                    getTooltipLabel={tooltipLabel}
-                    getTooltipValue={tooltipValue}
-                    getLegendLabel={legend}
-                />
-                <TotalsInternal
-                    data={data}
-                    getBars={() => <Bar dataKey="active" fill="#e60000" />}
-                    getTooltipLabel={tooltipLabel}
-                    getTooltipValue={tooltipValue}
-                    getLegendLabel={legend}
-                />
-                <TotalsInternal
-                    data={data}
-                    getBars={() => <Bar dataKey="recovered" fill="#0a6624" />}
-                    getTooltipLabel={tooltipLabel}
-                    getTooltipValue={tooltipValue}
-                    getLegendLabel={legend}
-                />
-                <TotalsInternal
-                    data={data}
-                    getBars={() => <Bar dataKey="tests" fill="#6189ba" />}
-                    getTooltipLabel={tooltipLabel}
-                    getTooltipValue={tooltipValue}
-                    getLegendLabel={legend}
-                />
-                <TotalsInternal
-                    dataKey="value"
-                    data={data}
-                    getBars={() => <Bar dataKey="recentTests" fill="#1a5cad" />}
-                    getTooltipLabel={tooltipLabel}
-                    getTooltipValue={tooltipValue}
-                    getLegendLabel={legend}
-                />
-            </>
-        );
+        return displayType === DisplayType.group ?
+            renderGroup(data) : renderIndividual(data);
     }
-
 
     return (
         <>
