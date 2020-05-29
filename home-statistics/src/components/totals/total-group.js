@@ -1,13 +1,13 @@
 import React from 'react';
 import {
-    BarChart, Brush, ReferenceLine, YAxis, XAxis, CartesianGrid, Tooltip, Legend,
+    BarChart, Bar, Brush, ReferenceLine, YAxis, XAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts';
 
 export const Totals = ({
-    getBars,
+    dataKey,
     data,
+    barColor,
     getTooltipLabel,
-    getTooltipValue,
     getLegendLabel
  }) => {
     const [width, setWidth] = React.useState(window.innerWidth);
@@ -27,16 +27,14 @@ export const Totals = ({
                 <YAxis />
                 <XAxis dataKey="name" />
                 <Tooltip
-                labelFormatter={getTooltipLabel}
-                formatter={getTooltipValue}
-                />
+                labelFormatter={getTooltipLabel} />
                 <Legend
                     verticalAlign="top"
                     wrapperStyle={{ lineHeight: '50px' }}
                     formatter={getLegendLabel} />
                 <ReferenceLine y={0} stroke="#000" />
                 <Brush dataKey="name" height={30} stroke="#8884d8" />
-                {getBars()}
+                <Bar dataKey={dataKey} fill={barColor} />
             </BarChart>
         </div>
     )
