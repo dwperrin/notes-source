@@ -1,44 +1,88 @@
 import React, { useContext, useMemo } from 'react';
 import { DataContext } from 'components/data-context';
-import {
-    BarChart, Bar, Brush, ReferenceLine, YAxis, XAxis, CartesianGrid, Tooltip, Legend,
-} from 'recharts';
+
+import { Totals as TotalsInternal } from './total';
+
+const tooltipLabel = (value) => `Postal Code: ${value}`;
+const caseLegend = () => 'Total Cases';
+const activeLegend = () => 'Active';
+const recoveredLegend = () => 'Recovered';
+const testsLegend = () => 'Total Tests';
+const testsRecentLegend = () => 'Recent Tests';
 
 export const Totals = () => {
-    const { cases, selectedDate } = useContext(DataContext);
-    const [width, setWidth] = React.useState(window.innerWidth);
 
-    React.useEffect(() => {
-        window.addEventListener("resize", () => setWidth(window.innerWidth));
-    }, []);
+    const { cases, tests, selectedDate } = useContext(DataContext);
 
-    const data = useMemo(() =>
-        [...cases.get(selectedDate).values()]
-        .map(item => ({ 'Total Cases': item.Cases, name: item.POA_NAME16}))
-        .filter(item => item.name)
-    , [cases, selectedDate]);
+    const {
+        displayCases,
+        displayActive,
+        displayRecovered,
+        displayTests,
+        displayRecentTests
+     } = useMemo(() => {
+        const baseCases = [...cases.get(selectedDate).values()]
+        .filter(item => item.POA_NAME16)
+        .map(item => ({
+            cases: { value: item.Cases, name: item.POA_NAME16 },
+            active: { value: item.Active, name: item.POA_NAME16 },
+            recovered: { value: item.Recovered, name: item.POA_NAME16 }
+        }));
 
-    if(!cases) {
-        return null;
+        const baseTests = [...tests.get(selectedDate).values()]
+        .filter(item => item.POA_NAME16)
+        .map(item => ({
+            total: { value: item.Number, name: item.POA_NAME16 },
+            recent: { value: item.Recent, name: item.POA_NAME16 }
+        }));
+
+        return {
+            displayCases: baseCases.map(item => item.cases),
+            displayActive: baseCases.map(item => item.active),
+            displayRecovered: baseCases.map(item => item.recovered),
+            displayTests: baseTests.map(item => item.total),
+            displayRecentTests: baseTests.map(item => item.recent)
+        };
     }
+    , [cases, tests, selectedDate]);
 
     return (
-        <div>
-            <BarChart
-                width={width}
-                height={300}
-                data={data}
-                margin={{ top: 5, right: 130, left: 70, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <YAxis />
-                <XAxis dataKey="name" />
-                <Tooltip
-                labelFormatter={(value) => `Postal Code: ${value}`} />
-                <Legend verticalAlign="top" wrapperStyle={{ lineHeight: '50px' }} />
-                <ReferenceLine y={0} stroke="#000" />
-                <Brush dataKey="name" height={30} stroke="#8884d8" />
-                <Bar dataKey="Total Cases" fill="#ff8080" />
-            </BarChart>
-        </div>
-    )
+        <>
+            <TotalsInternal
+                dataKey="value"
+                data={displayCases}
+                barColor="#ff8080"
+                getTooltipLabel={tooltipLabel}
+                getLegendLabel={caseLegend}
+            />
+            <TotalsInternal
+                dataKey="value"
+                data={displayActive}
+                barColor="#e60000"
+                getTooltipLabel={tooltipLabel}
+                getLegendLabel={activeLegend}
+            />
+            <TotalsInternal
+                dataKey="value"
+                data={displayRecovered}
+                barColor="#0a6624"
+                getTooltipLabel={tooltipLabel}
+                getLegendLabel={recoveredLegend}
+            />
+            <TotalsInternal
+                dataKey="value"
+                data={displayTests}
+                barColor="#6189ba"
+                getTooltipLabel={tooltipLabel}
+                getLegendLabel={testsLegend}
+            />
+            <TotalsInternal
+                dataKey="value"
+                data={displayRecentTests}
+                barColor="#1a5cad"
+                getTooltipLabel={tooltipLabel}
+                getLegendLabel={testsRecentLegend}
+            />
+        </>
+    );
 }

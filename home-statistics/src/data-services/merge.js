@@ -88,18 +88,19 @@ export const mergeData = ({
             feature.properties[rangeRecoveredKey] = 0;
 
             if(caseEntry.has(feature.properties.POA_NAME16)) {
+
                 const caseEntryValue = caseEntry.get(feature.properties.POA_NAME16);
                 const total = parseInt(caseEntryValue.Cases);
                 const recovered = parseInt(caseEntryValue.Recovered);
                 const dead = parseInt(caseEntryValue.Deaths);
-                const active = total - (recovered + dead);
+                caseEntryValue.Active = total - (recovered + dead);
 
                 feature.properties[date] = caseLevelKey(total);
-                feature.properties[rangeActiveKey] = activeLevelsKey(active);
+                feature.properties[rangeActiveKey] = activeLevelsKey(caseEntryValue.Active);
                 feature.properties[rangeRecoveredKey] = recoveredLevelsKey(recovered);
 
                 feature.properties[totalKey] = total;
-                feature.properties[activeKey] = active;
+                feature.properties[activeKey] = caseEntryValue.Active;
                 feature.properties[recoveredKey] = recovered;
                 feature.properties[deadKey] = dead;
             }
