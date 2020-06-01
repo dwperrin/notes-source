@@ -1,0 +1,12 @@
+.selector {
+    padding: 40px;
+    font-size: 25px;
+}
+
+.selector .item {
+    padding: 20px;
+}
+
+.selector .item.selected {
+    border-bottom: 3px solid black;
+}

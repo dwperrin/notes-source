@@ -87,8 +87,9 @@ export const mergeData = ({
             feature.properties[rangeActiveKey] = 0;
             feature.properties[rangeRecoveredKey] = 0;
 
-            if(caseEntry.has(feature.properties.POA_NAME16)) {
+            const hasCasesPOA = caseEntry.has(feature.properties.POA_NAME16);
 
+            if(hasCasesPOA) {
                 const caseEntryValue = caseEntry.get(feature.properties.POA_NAME16);
                 const total = parseInt(caseEntryValue.Cases);
                 const recovered = parseInt(caseEntryValue.Recovered);
@@ -109,6 +110,12 @@ export const mergeData = ({
                 const testEntryValue = testsEntry.get(feature.properties.POA_NAME16);
                 const total = parseInt(testEntryValue.Number);
                 const testRange = testLevelKey(total);
+
+                if(hasCasesPOA) {
+                    const caseEntryValue = caseEntry.get(feature.properties.POA_NAME16);
+                    caseEntryValue.Tests = testEntryValue.Number;
+                    caseEntryValue.RecentTests = testEntryValue.Recent;
+                }
 
                 feature.properties[testsKey] = total;
                 feature.properties[rangeTestsKey] = testRange;

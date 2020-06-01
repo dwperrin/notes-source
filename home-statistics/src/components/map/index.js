@@ -8,7 +8,7 @@ import { bagKeys } from 'data-services';
 import { source, layers, swap } from './layers';
 import { GeoCoder } from './geo-coder';
 import { usePopup, Popup } from './popup';
-import { Selector } from './selector';
+import { Selector } from 'components/selector';
 
 const token = "pk.eyJ1IjoibWF4LW1hcGJveCIsImEiOiJjazh2M2Nxa2wwN2lqM21sZHR6OGltODZlIn0.WZQrkr5xUuF2pYodrApo-g";
 
@@ -18,6 +18,20 @@ const mapType = Object.freeze({
     active: layers.activeId,
     recovered: layers.recoveredId
 });
+
+const selectorData = [{
+    key: mapType.cases,
+    name: 'Total'
+}, {
+    key: mapType.active,
+    name: 'Active'
+},{
+    key: mapType.recovered,
+    name: 'Recovered'
+},{
+    key: mapType.tests,
+    name: 'Tests'
+}];
 
 export const Map = () => {
     const { postCodes, selectedDate } = useContext(DataContext);
@@ -50,9 +64,15 @@ export const Map = () => {
         setPopup(e.features || null, e.lngLat);
     }
 
+
     return (
         <div className="map">
-            <Selector {...{ mapStyle, mapType, setMapStyle }} />
+            <Selector
+                data={selectorData}
+                selectedKey={mapStyle}
+                setSelected={setMapStyle}
+                title="Cases #"
+             />
             <div ref={geoCoderRef} className="geocoder"></div>
             <MapGL
                 ref={mapRef}

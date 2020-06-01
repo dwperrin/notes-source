@@ -1,18 +1,20 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Bar } from 'recharts';
-
 import { DataContext } from 'components/data-context';
-import { Totals as TotalsInternal } from './total';
+import { Totals as TotalsInternal } from './chart';
+import { Selector } from 'components/selector';
+
+const dataKeys = Object.freeze({
+    'Cases' : { id: 1, fill: '#ff8080', legend: 'Total Cases' },
+    'Active': { id: 2, fill: '#e60000', legend: 'Active' },
+    'Recovered': { id: 3, fill: '#0a6624', legend: 'Recovered' },
+    'Tests': { id: 4, fill: '#6189ba', legend: 'Total Tests' },
+    'RecentTests': { id: 5, fill: '#6189ba', legend: 'Recent Tests' }
+});
 
 const legend = (key) => {
-    switch(key){
-        case 'cases': return 'Total Cases';
-        case 'active': return 'Active';
-        case 'recovered': return 'Recovered';
-        case 'tests': return 'Total Tests';
-        case 'recentTests': return 'Recent Tests';
-        default: return key;
-    }
+    const result = dataKeys[key];
+    return result ? result.legend : key;
 }
 
 const tooltipLabel = (value) => `Postal Code: ${value}`;
@@ -26,90 +28,56 @@ const DisplayType = Object.freeze({
     nonGroup: 'non-group'
 });
 
+const selectorData = [{
+    key: DisplayType.group,
+    name: 'Grouped'
+}, {
+    key: DisplayType.nonGroup,
+    name: 'Separate'
+}];
+
 const renderGroup = (data) => (
     <TotalsInternal
-        getBars={() =>
-            [
-                <Bar key="1" dataKey="cases" fill="#ff8080" />,
-                <Bar key="2" dataKey="active" fill="#e60000" />,
-                <Bar key="3" dataKey="recovered" fill="#0a6624" />,
-                <Bar key="4" dataKey="tests" fill="#6189ba" />,
-                <Bar key="5" dataKey="recentTests" fill="#6189ba" />
-            ]
+        getBars={() => Object.entries(dataKeys)
+            .map(([key, item]) =>
+                <Bar
+                    key={item.id}
+                    dataKey={key}
+                    fill={item.fill}
+                />
+            )
         }
         data={data}
+        xAxisDataKey="POA_NAME16"
         getTooltipLabel={tooltipLabel}
         getTooltipValue={tooltipValue}
         getLegendLabel={legend}
     />
 );
 
-const renderIndividual = (data) => (
-    <>
+const renderIndividual = (data) =>
+    Object.entries(dataKeys)
+    .map(([key, item]) =>
         <TotalsInternal
-            getBars={() => <Bar dataKey="cases" fill="#ff8080" />}
+            key={item.id}
+            getBars={() => <Bar dataKey={key} fill={item.fill} />}
             data={data}
+            xAxisDataKey="POA_NAME16"
             getTooltipLabel={tooltipLabel}
             getTooltipValue={tooltipValue}
             getLegendLabel={legend}
-        />
-        <TotalsInternal
-            data={data}
-            getBars={() => <Bar dataKey="active" fill="#e60000" />}
-            getTooltipLabel={tooltipLabel}
-            getTooltipValue={tooltipValue}
-            getLegendLabel={legend}
-        />
-        <TotalsInternal
-            data={data}
-            getBars={() => <Bar dataKey="recovered" fill="#0a6624" />}
-            getTooltipLabel={tooltipLabel}
-            getTooltipValue={tooltipValue}
-            getLegendLabel={legend}
-        />
-        <TotalsInternal
-            data={data}
-            getBars={() => <Bar dataKey="tests" fill="#6189ba" />}
-            getTooltipLabel={tooltipLabel}
-            getTooltipValue={tooltipValue}
-            getLegendLabel={legend}
-        />
-        <TotalsInternal
-            dataKey="value"
-            data={data}
-            getBars={() => <Bar dataKey="recentTests" fill="#1a5cad" />}
-            getTooltipLabel={tooltipLabel}
-            getTooltipValue={tooltipValue}
-            getLegendLabel={legend}
-        />
-    </>
-)
+    />
+);
 
 export const Totals = () => {
 
-    const { cases, tests, selectedDate } = useContext(DataContext);
+    const { cases, selectedDate } = useContext(DataContext);
     const [ displayType, setDisplayType ] = useState(DisplayType.group);
 
-    const data = useMemo(() => {
-
-        const testsEntry = tests.get(selectedDate);
-
-        return [...cases.get(selectedDate).values()]
-        .filter(item => item.POA_NAME16)
-        .map(item => {
-
-            const displayTests = testsEntry.get(item.POA_NAME16);
-
-            return {
-                cases: item.Cases,
-                active: item.Active,
-                recovered: item.Recovered,
-                name: item.POA_NAME16,
-                ...(displayTests && { tests: displayTests.Number, recentTests: displayTests.Recent })
-            };
-        });
-    }
-    , [cases, tests, selectedDate]);
+    const data = useMemo(() =>
+        [...cases.get(selectedDate).values()],
+        [cases, selectedDate]
+    );
 
     const render = () => {
         return displayType === DisplayType.group ?
@@ -118,15 +86,16 @@ export const Totals = () => {
 
     return (
         <>
-            <select onChange={(e) => {
-                const value = e.target.value;
-                setTimeout(() => {
-                    setDisplayType(value);
-                }, 0);
-            }}>
-                <option value={DisplayType.group} >Show grouped</option>
-                <option value={DisplayType.nonGroup} >Show separate</option>
-            </select>
+            <Selector
+                data={selectorData}
+                title="Display"
+                selectedKey={displayType}
+                setSelected={(key) => {
+                    setTimeout(() => {
+                        setDisplayType(key);
+                    }, 0);
+                }}
+            />
             {render()}
         </>
     );
