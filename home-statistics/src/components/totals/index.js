@@ -89,12 +89,7 @@ export const Totals = () => {
             <Selector
                 data={selectorData}
                 title="Display"
-                selectedKey={displayType}
-                setSelected={(key) => {
-                    setTimeout(() => {
-                        setDisplayType(key);
-                    }, 0);
-                }}
+                notifySelected={setDisplayType}
             />
             {render()}
         </>

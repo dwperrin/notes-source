@@ -1,7 +1,9 @@
 import './selector.css';
-import React from 'react';
+import React, { useState } from 'react';
 
-export const Selector = ({ data, selectedKey, setSelected, title }) => {
+export const Selector = ({ data, title, notifySelected }) => {
+
+    const [selectedKey, setSelectedKey] = useState(data[0].key);
 
     const items = data
         .map(({ key, name}) => (
@@ -11,7 +13,13 @@ export const Selector = ({ data, selectedKey, setSelected, title }) => {
             >
                 <input type="radio" name="test" value={key}
                     checked={selectedKey === key}
-                    onChange={() => { setSelected(key); }} />
+                    onChange={() => {
+                        setSelectedKey(key);
+
+                        setTimeout(() => {
+                            notifySelected(key);
+                        }, 0);
+                    }} />
                 {name}
             </label>
         ));

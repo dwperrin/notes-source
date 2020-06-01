@@ -69,8 +69,7 @@ export const Map = () => {
         <div className="map">
             <Selector
                 data={selectorData}
-                selectedKey={mapStyle}
-                setSelected={setMapStyle}
+                notifySelected={setMapStyle}
                 title="Cases #"
              />
             <div ref={geoCoderRef} className="geocoder"></div>
