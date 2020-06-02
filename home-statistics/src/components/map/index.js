@@ -9,8 +9,7 @@ import { source, layers, swap } from './layers';
 import { GeoCoder } from './geo-coder';
 import { usePopup, Popup } from './popup';
 import { Selector } from 'components/selector';
-
-const token = "pk.eyJ1IjoibWF4LW1hcGJveCIsImEiOiJjazh2M2Nxa2wwN2lqM21sZHR6OGltODZlIn0.WZQrkr5xUuF2pYodrApo-g";
+import { token } from 'utils/map';
 
 const mapType = Object.freeze({
     cases: layers.casesId,
@@ -46,8 +45,10 @@ export const Map = () => {
     const [popup, setPopup] = usePopup(() => bagKeys(selectedDate))
 
     useEffect(() => {
-        const map = mapRef.current.getMap();
-        swap(map, mapStyle, mapType);
+        const map = mapRef.current?.getMap();
+        if(map) {
+            swap(map, mapStyle, mapType);
+        }
 
     }, [mapStyle]);
 
@@ -64,6 +65,9 @@ export const Map = () => {
         setPopup(e.features || null, e.lngLat);
     }
 
+    if(!postCodes) {
+        return null;
+    }
 
     return (
         <div className="map">
@@ -89,7 +93,7 @@ export const Map = () => {
                     onViewportChange={handleGeocoderViewportChange}
                     token={token}
                 />
-                {postCodes && source(postCodes, selectedDate)}
+                {source(postCodes, selectedDate)}
                 {popup.show && <Popup {...popup} />}
             </MapGL>
         </div>

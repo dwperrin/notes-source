@@ -3,6 +3,7 @@ import {
     AreaChart, Area, YAxis, XAxis, CartesianGrid, Tooltip, Legend
 } from 'recharts';
 import { useResize } from 'utils/hooks'
+import { SuburbSuggest } from './suburb-suggest';
 
 const dataKeys = Object.freeze({
     Cases : { key: 'Cases', fill: '#ff8080', legend: 'Total Cases' },
@@ -29,6 +30,7 @@ export const BySuburb = ({data}) => {
 
     return (
         <>
+            <SuburbSuggest />
             <AreaChart
             width={width}
             height={300}
