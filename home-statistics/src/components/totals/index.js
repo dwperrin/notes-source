@@ -1,8 +1,9 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Bar } from 'recharts';
 import { DataContext } from 'components/data-context';
-import { Totals as TotalsInternal } from './chart';
+import { AllSuburbs } from './all-suburbs';
 import { Selector } from 'components/selector';
+import { BySuburb } from './by-suburb';
 
 const dataKeys = Object.freeze({
     'Cases' : { id: 1, fill: '#ff8080', legend: 'Total Cases' },
@@ -23,21 +24,19 @@ const tooltipValue = (value, name) => {
     return [value, displayName ]
 }
 
-const DisplayType = Object.freeze({
-    group: 'group',
-    nonGroup: 'non-group'
-});
-
 const selectorData = [{
-    key: DisplayType.group,
+    key: 'group',
     name: 'Grouped'
 }, {
-    key: DisplayType.nonGroup,
+    key: 'non-group',
     name: 'Separate'
+}, {
+    key: 'by-suburb',
+    name: 'By Suburb'
 }];
 
 const renderGroup = (data) => (
-    <TotalsInternal
+    <AllSuburbs
         getBars={() => Object.entries(dataKeys)
             .map(([key, item]) =>
                 <Bar
@@ -58,7 +57,7 @@ const renderGroup = (data) => (
 const renderIndividual = (data) =>
     Object.entries(dataKeys)
     .map(([key, item]) =>
-        <TotalsInternal
+        <AllSuburbs
             key={item.id}
             getBars={() => <Bar dataKey={key} fill={item.fill} />}
             data={data}
@@ -71,17 +70,42 @@ const renderIndividual = (data) =>
 
 export const Totals = () => {
 
-    const { cases, selectedDate } = useContext(DataContext);
-    const [ displayType, setDisplayType ] = useState(DisplayType.group);
+    const { cases, selectedDate, dates } = useContext(DataContext);
+    const [ displayType, setDisplayType ] = useState(selectorData[0].key);
 
     const data = useMemo(() =>
         [...cases.get(selectedDate).values()],
         [cases, selectedDate]
     );
 
+    const suburbData = useMemo(() => {
+        return dates
+        .map(date => {
+            const caseEntry = cases.get(date);
+
+            if(!caseEntry) {
+                return null;
+            }
+
+            return caseEntry.get("2147")
+        });
+    }, [dates, cases]);
+
     const render = () => {
-        return displayType === DisplayType.group ?
-            renderGroup(data) : renderIndividual(data);
+
+        if(displayType === selectorData[0].key) {
+            return renderGroup(data);
+        }
+
+        if(displayType === selectorData[1].key) {
+            return renderIndividual(data);
+        }
+
+        if(displayType === selectorData[2].key) {
+            return (<BySuburb data={suburbData} />);
+        }
+
+        return (null);
     }
 
     return (

@@ -2,8 +2,9 @@ import React from 'react';
 import {
     BarChart, Brush, ReferenceLine, YAxis, XAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts';
+import { useResize } from 'utils/hooks';
 
-export const Totals = ({
+export const AllSuburbs = ({
     getBars,
     data,
     xAxisDataKey,
@@ -11,11 +12,7 @@ export const Totals = ({
     getTooltipValue,
     getLegendLabel
  }) => {
-    const [width, setWidth] = React.useState(window.innerWidth- 50);
-
-    React.useEffect(() => {
-        window.addEventListener("resize", () => setWidth(window.innerWidth - 50));
-    }, []);
+    const [width] = useResize();
 
     return (
         <BarChart
@@ -27,8 +24,8 @@ export const Totals = ({
             <YAxis />
             <XAxis dataKey={xAxisDataKey} />
             <Tooltip
-            labelFormatter={getTooltipLabel}
-            formatter={getTooltipValue}
+                labelFormatter={getTooltipLabel}
+                formatter={getTooltipValue}
             />
             <Legend
                 verticalAlign="top"
