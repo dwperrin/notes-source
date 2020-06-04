@@ -3,6 +3,7 @@ import { DataContext } from 'components/data-context';
 import { Selector } from 'components/selector';
 import { AllSuburbs } from './all-suburbs';
 import { BySuburb } from './by-suburb';
+import { SuburbSuggest } from './suburb-suggest';
 
 const selectorData = [{
     key: 'group',
@@ -19,6 +20,7 @@ export const Totals = () => {
 
     const { cases, selectedDate, dates } = useContext(DataContext);
     const [ displayType, setDisplayType ] = useState(selectorData[0].key);
+    const [ suburb, setSuburb ] = useState('');
 
     const data = useMemo(() =>
         [...cases.get(selectedDate).values()],
@@ -26,6 +28,11 @@ export const Totals = () => {
     );
 
     const suburbData = useMemo(() => {
+
+        if(!suburb) {
+            return [];
+        }
+
         return dates
         .map(date => {
             const caseEntry = cases.get(date);
@@ -34,9 +41,9 @@ export const Totals = () => {
                 return null;
             }
 
-            return caseEntry.get("2147")
+            return caseEntry.get(suburb)
         });
-    }, [dates, cases]);
+    }, [suburb, dates, cases]);
 
     const render = () => {
 
@@ -49,7 +56,11 @@ export const Totals = () => {
         }
 
         if(displayType === selectorData[2].key) {
-            return (<BySuburb data={suburbData} />);
+            return (
+            <>
+                <SuburbSuggest onSuburbSelected={setSuburb} value={suburb} />
+                <BySuburb data={suburbData} />
+            </>);
         }
 
         return (null);
