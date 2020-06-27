@@ -3,12 +3,11 @@ import './map.css';
 
 import React, { useState, useRef, useContext, useEffect } from 'react';
 import MapGL from 'react-map-gl';
-import { DataContext } from 'components/data-context';
+import { DataContext, Selector } from 'components';
 import { bagKeys } from 'data-services';
 import { source, layers, swap } from './layers';
 import { GeoCoder } from './geo-coder';
 import { usePopup, Popup } from './popup';
-import { Selector } from 'components/selector';
 import { token } from 'utils/map';
 
 const mapType = Object.freeze({
@@ -33,7 +32,7 @@ const selectorData = [{
 }];
 
 export const Map = () => {
-    const { postCodes, selectedDate } = useContext(DataContext);
+    const { postCodesGeometry, selectedDate } = useContext(DataContext);
     const [viewport, setViewport] = useState({
         zoom: 6,
         latitude: -32.8688,
@@ -65,7 +64,7 @@ export const Map = () => {
         setPopup(e.features || null, e.lngLat);
     }
 
-    if(!postCodes) {
+    if(!postCodesGeometry) {
         return null;
     }
 
@@ -93,7 +92,7 @@ export const Map = () => {
                     onViewportChange={handleGeocoderViewportChange}
                     token={token}
                 />
-                {source(postCodes, selectedDate)}
+                {source(postCodesGeometry, selectedDate)}
                 {popup.show && <Popup {...popup} />}
             </MapGL>
         </div>

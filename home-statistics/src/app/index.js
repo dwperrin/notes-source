@@ -2,9 +2,8 @@ import 'react-tabs/style/react-tabs.css';
 import './app.css';
 
 import React from 'react';
-import { Map, DataProvider, DateSlider } from 'components';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { Totals } from 'components/totals'
+import { Map, Totals, Corelation, DataProvider, DateSlider } from 'components'
 
 const App =() => (
     <DataProvider>
@@ -17,12 +16,16 @@ const App =() => (
                 <TabList>
                     <Tab>Map</Tab>
                     <Tab>Totals</Tab>
+                    <Tab>Correlation</Tab>
                 </TabList>
                 <TabPanel>
                     <Map />
                 </TabPanel>
                 <TabPanel>
                     <Totals />
+                </TabPanel>
+                <TabPanel>
+                    <Corelation />
                 </TabPanel>
             </Tabs>
         </section>

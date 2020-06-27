@@ -18,12 +18,18 @@ const formatMap = (data) =>
 const formatPopulation = (data) =>
     data.reduce((acc, curr) => {
         const key = curr.POA_NAME16.toString();
-        const entry = acc.has(key) ? acc.get(key) : curr;
-        acc.set(key, entry);
+
+        const population = acc.population;
+        const entry = population.has(key) ? population.get(key) : curr;
+        population.set(key, entry);
+
+        acc.suburbs.push({ postCode: key, name: curr.Combined  });
 
         return acc;
-    }, new Map());
-
+    }, {
+        population: new Map(),
+        suburbs: []
+    });
 
 const getLevelKey = (levels) => (count) =>
     levels.find(item => {
@@ -45,12 +51,12 @@ const getLevelKey = (levels) => (count) =>
     }).key;
 
 export const mergeData = ({
-    postCodes,
+    postCodesGeometry,
     cases: casesInitial,
     population: populationInitial,
     tests: testsInitial }) => {
 
-    if(!postCodes) {
+    if(!postCodesGeometry) {
         return { };
     }
 
@@ -61,12 +67,12 @@ export const mergeData = ({
 
     const cases = formatMap(casesInitial);
     const tests = formatMap(testsInitial);
-    const population = formatPopulation(populationInitial);
+    const { population: populationByCode, suburbs } = formatPopulation(populationInitial);
 
     const dates = Array.from(cases.keys());
     const selectedDate = dates[dates.length - 1];
 
-    postCodes.features.forEach(feature => {
+    postCodesGeometry.features.forEach(feature => {
         dates.forEach(date => {
             const caseEntry = cases.get(date);
             const testsEntry = tests.get(date);
@@ -122,12 +128,21 @@ export const mergeData = ({
             }
         });
 
-        if(population.has(feature.properties.POA_NAME16)) {
-            const populationEntry = population.get(feature.properties.POA_NAME16);
+        if(populationByCode.has(feature.properties.POA_NAME16)) {
+            const populationEntry = populationByCode.get(feature.properties.POA_NAME16);
             feature.properties.population = populationEntry.Tot_p_p;
             feature.properties.suburbName = populationEntry.Combined;
         }
     });
 
-    return { postCodes, cases, population, tests, selectedDate, dates };
+    return {
+        postCodesGeometry,
+        suburbs,
+        cases,
+        populationByCode,
+        population: populationInitial,
+        tests,
+        selectedDate,
+        dates
+    };
 }

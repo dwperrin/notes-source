@@ -5,6 +5,7 @@
 
 .selector .item {
     padding: 20px;
+    cursor: pointer;
 }
 
 .selector .item.selected {

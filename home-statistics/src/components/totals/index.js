@@ -1,9 +1,7 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { DataContext } from 'components/data-context';
-import { Selector } from 'components/selector';
+import { DataContext, Selector, SuburbSuggest } from 'components';
 import { AllSuburbs } from './all-suburbs';
 import { BySuburb } from './by-suburb';
-import { SuburbSuggest } from './suburb-suggest';
 
 const selectorData = [{
     key: 'group',
@@ -20,7 +18,7 @@ export const Totals = () => {
 
     const { cases, selectedDate, dates } = useContext(DataContext);
     const [ displayType, setDisplayType ] = useState(selectorData[0].key);
-    const [ suburb, setSuburb ] = useState('');
+    const [ postCode, setPostCode ] = useState('');
 
     const data = useMemo(() =>
         [...cases.get(selectedDate).values()],
@@ -29,7 +27,7 @@ export const Totals = () => {
 
     const suburbData = useMemo(() => {
 
-        if(!suburb) {
+        if(!postCode) {
             return [];
         }
 
@@ -41,9 +39,9 @@ export const Totals = () => {
                 return null;
             }
 
-            return caseEntry.get(suburb)
+            return caseEntry.get(postCode)
         });
-    }, [suburb, dates, cases]);
+    }, [postCode, dates, cases]);
 
     const render = () => {
 
@@ -58,7 +56,7 @@ export const Totals = () => {
         if(displayType === selectorData[2].key) {
             return (
             <>
-                <SuburbSuggest onSuburbSelected={setSuburb} value={suburb} />
+                <SuburbSuggest onSuburbSelected={setPostCode} value={postCode} />
                 <BySuburb data={suburbData} />
             </>);
         }

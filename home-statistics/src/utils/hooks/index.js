@@ -16,3 +16,24 @@ export const useResize = (borderWidth = 50) => {
 
     return [width];
 }
+
+const calculateWidth = x => (window.innerWidth * x) / 100
+
+
+export const useResizePercent = (percent = 50) => {
+
+    const [width, setWidth] = useState(calculateWidth(percent));
+
+    const resizeListener = useCallback(() =>
+        setWidth(calculateWidth(percent)), [percent])
+
+    useEffect(() => {
+        window.addEventListener("resize", resizeListener);
+
+        return () => {
+            window.removeEventListener("resize", resizeListener);
+        }
+    }, [percent, resizeListener]);
+
+    return [width];
+}
