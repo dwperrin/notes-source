@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "compute-histogram": "^0.9.7",
     "mapbox-gl": "1.10.0",
     "react": "^16.13.1",
     "react-autosuggest": "10.0.2",

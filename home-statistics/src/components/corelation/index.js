@@ -16,7 +16,6 @@ const selectorData = [{
     name: 'Grouped'
 }];
 
-
 export const Corelation = () => {
     const { cases, population, selectedDate } = useContext(DataContext);
     const [ displayType, setDisplayType ] = useState(selectorData[0].key);
@@ -67,7 +66,9 @@ export const Corelation = () => {
             id: 1,
             cell: "population-population",
             isDiagonal: true,
-            data: population,
+            axis: { keys: ["population"], names: ["Population"] },
+            data: byPopulation,
+            color: '#8884d8'
         },{
             id: 2,
             cell: "population-cases",
@@ -107,7 +108,9 @@ export const Corelation = () => {
             id: 7,
             cell: "cases-cases",
             isDiagonal: true,
+            axis: { keys: ["totalCases"], names: ["Total Cases"] },
             data: byCases,
+            color: '#8884d8'
         },{
             id: 8,
             cell: "cases-active",
@@ -147,7 +150,9 @@ export const Corelation = () => {
             id: 13,
             cell: "active-active",
             isDiagonal: true,
-            data: byActive
+            axis: { keys: ["active"], names: ["Active"] },
+            data: byActive,
+            color: '#8884d8'
         },{
             id: 14,
             cell: "active-recovered",
@@ -187,7 +192,9 @@ export const Corelation = () => {
             id: 19,
             cell: "recovered-recovered",
             isDiagonal: true,
-            data: byRecovered
+            axis: { keys: ["recovered"], names: ["Recovered"] },
+            data: byRecovered,
+            color: '#8884d8'
         },{
             id: 20,
             cell: "recovered-tests",
@@ -227,7 +234,9 @@ export const Corelation = () => {
             id: 25,
             cell: "tests-tests",
             isDiagonal: true,
-            data: byTests
+            axis: { keys: ["tests"], names: ["Tests"] },
+            data: byTests,
+            color: '#8884d8'
         }];
 
     }, [selectedDate, cases, population]);

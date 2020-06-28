@@ -18,7 +18,7 @@ const AllSuburbsBarChart = ({
     return (
         <BarChart
             width={width}
-            height={300}
+            height={500}
             data={data}
             margin={{ top: 5, right: 130, left: 70, bottom: 5 }}>
             <CartesianGrid strokeDasharray="1 1" />

@@ -56,18 +56,12 @@
     padding: 10px 20px;
 }
 
-.suburb-suggest .react-autosuggest__suggestion--highlighted {
+.chart-suggest .react-autosuggest__suggestion--highlighted {
     background-color: #ddd;
 }
 
 .chart-suggest .suggestion-item {
     word-break: break-word;
-}
-
-.chart-suggest .suggestion-item .suburb-long {
-    display: none;
-}
-
-.chart-suggest .react-autosuggest__suggestion:hover .suburb-long {
-    display: block;
+    font-weight: 400;
+    font-size: 17px;
 }

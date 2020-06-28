@@ -23,7 +23,7 @@ export const SuburbSuggest = ({ onSuburbSelected, value: initial }) => {
 
     const getSuggestions = value =>
         suburbs.filter(item =>
-            item.name.toLowerCase().includes(value) ||
+            item.name.toLowerCase().includes(value.toLowerCase()) ||
             item.postCode.includes(value))
         .slice(0, 5);
 

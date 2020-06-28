@@ -5,7 +5,7 @@ import Autosuggest from 'react-autosuggest';
 
 const renderSuggestion = suggestion => (
     <div className="suggestion-item">
-        <strong>{suggestion.name}</strong>
+        <span>{suggestion.name}</span>
     </div>
 );
 
@@ -46,7 +46,7 @@ export const ChartSuggest = ({ onSuburbSelected, value: initial }) => {
 
     const getSuggestions = value =>
         charts.filter(item =>
-                item.name.toLowerCase().includes(value))
+                item.name.toLowerCase().includes(value.toLowerCase()))
             .slice(0, 10);
 
     const onSuggestionsFetchRequested = ({ value }) => {
@@ -88,7 +88,7 @@ export const ChartSuggest = ({ onSuburbSelected, value: initial }) => {
     };
 
     return (
-        <div className="suburb-suggest">
+        <div className="chart-suggest">
             <Autosuggest
                 suggestions={suggestions}
                 onSuggestionsFetchRequested={onSuggestionsFetchRequested}
